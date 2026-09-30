@@ -3,7 +3,13 @@
     "name": "codewithdennis/larament",
     "type": "project",
     "description": "Larament is a time-saving starter kit to quickly launch Laravel 13.x projects. It includes FilamentPHP 5.x pre-installed and configured, along with additional tools and features to streamline your development workflow.",
-    "keywords": ["laravel", "framework", "filamentphp", "starter-kit", "larament"],
+    "keywords": [
+        "laravel",
+        "framework",
+        "filamentphp",
+        "starter-kit",
+        "larament"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.5",
@@ -18,7 +24,7 @@
         "fakerphp/faker": "^1.23",
         "fruitcake/laravel-debugbar": "^4.0",
         "larastan/larastan": "^3.0",
-        "laravel/boost": "^2.0",
+        "laravel/boost": "^2.2",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
