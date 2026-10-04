@@ -246,6 +246,8 @@
                 <td class="value">
                     @if($invoice->isMonthly())
                         <span class="badge badge-monthly">Iuran Rutin Bulanan</span>
+                    @elseif($invoice->isSpecial())
+                        <span class="badge" style="background-color: #dcfce7; color: #15803d;">Iuran Khusus / Kegiatan</span>
                     @else
                         <span class="badge badge-construction">Iuran Pembangunan (Sekali Bayar)</span>
                     @endif
@@ -257,6 +259,17 @@
                     <td class="label">Periode Tagihan</td>
                     <td class="colon">:</td>
                     <td class="value">{{ \Carbon\Carbon::createFromFormat('Y-m', $invoice->billing_period)->translatedFormat('F Y') }}</td>
+                </tr>
+            @elseif($invoice->isSpecial())
+                <tr>
+                    <td class="label">Nama Kegiatan</td>
+                    <td class="colon">:</td>
+                    <td class="value">{{ $invoice->notes ?? 'Iuran Khusus / Insidental' }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Sifat Pembayaran</td>
+                    <td class="colon">:</td>
+                    <td class="value"><strong>Insidental / Partisipasi Warga</strong></td>
                 </tr>
             @else
                 <tr>
@@ -350,6 +363,7 @@
                 @endphp
                 <a href="https://wa.me/{{ $cleanPhone }}?text={{ rawurlencode($waMsg) }}" target="_blank" class="btn" style="background-color: #16a34a; color: #ffffff;">Kirim via WhatsApp</a>
             @endif
+            <a href="{{ route('receipt.print', ['payment' => $payment, 'format' => 'thermal']) }}" class="btn btn-secondary">Format Thermal (58mm)</a>
             <button onclick="window.print()" class="btn btn-primary">Cetak Kwitansi</button>
             <button onclick="window.close()" class="btn btn-secondary">Tutup</button>
         </div>

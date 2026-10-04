@@ -55,6 +55,9 @@ final class InvoicesTable
                         if ($record->isConstruction()) {
                             return 'Sekali Bayar';
                         }
+                        if ($record->isSpecial()) {
+                            return 'Insidental / Acara';
+                        }
                         if (! $state) {
                             return '-';
                         }
@@ -185,9 +188,11 @@ final class InvoicesTable
                             $phone = '62'.mb_substr($phone, 1);
                         }
 
-                        $rincian = $record->isMonthly()
-                            ? 'Iuran Rutin Periode '.($record->billing_period ? Carbon::createFromFormat('Y-m', $record->billing_period)->translatedFormat('F Y') : '-')
-                            : 'Iuran Pembangunan: '.($record->constructionProject?->project_type?->getLabel() ?? 'Pembangunan (1x Sekali Bayar)');
+                        $rincian = match (true) {
+                            $record->isMonthly() => 'Iuran Rutin Periode '.($record->billing_period ? Carbon::createFromFormat('Y-m', $record->billing_period)->translatedFormat('F Y') : '-'),
+                            $record->isSpecial() => 'Iuran Khusus / Kegiatan: '.($record->notes ?? 'Insidental'),
+                            default => 'Iuran Pembangunan: '.($record->constructionProject?->project_type?->getLabel() ?? 'Pembangunan (1x Sekali Bayar)'),
+                        };
 
                         $dueDate = $record->due_date ? $record->due_date->translatedFormat('d M Y') : 'Segera';
                         $bankInfo = $setting->bank_name ? "Pembayaran dapat ditransfer ke:\n*{$setting->bank_name} {$setting->bank_account_number}*\na.n. {$setting->bank_account_holder}\n\n" : '';

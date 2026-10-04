@@ -96,7 +96,11 @@ final class PublicBillingCheckController extends Controller
 
                 return [
                     'invoice_number' => $inv->invoice_number,
-                    'period' => $inv->isMonthly() ? Carbon::createFromFormat('Y-m', $inv->billing_period)->translatedFormat('F Y') : 'Iuran Pembangunan',
+                    'period' => match (true) {
+                        $inv->isMonthly() => Carbon::createFromFormat('Y-m', $inv->billing_period)->translatedFormat('F Y'),
+                        $inv->isSpecial() => $inv->notes ?? 'Iuran Khusus',
+                        default => 'Iuran Pembangunan',
+                    },
                     'total_amount' => $inv->total_amount,
                     'formatted_amount' => 'Rp'.number_format($inv->total_amount, 0, ',', '.'),
                     'paid_at' => $lastPayment?->payment_date?->translatedFormat('d M Y') ?? '-',
@@ -131,10 +135,13 @@ final class PublicBillingCheckController extends Controller
             'formatted_total_outstanding' => 'Rp'.number_format($totalOutstanding, 0, ',', '.'),
             'unpaid_count' => $unpaidInvoices->count(),
             'unpaid_invoices' => $unpaidInvoices->map(fn (Invoice $inv): array => [
+                'id' => $inv->id,
                 'invoice_number' => $inv->invoice_number,
-                'title' => $inv->isMonthly()
-                    ? 'Iuran Rutin '.Carbon::createFromFormat('Y-m', $inv->billing_period)->translatedFormat('F Y')
-                    : 'Iuran Pembangunan: '.($inv->constructionProject?->project_type?->getLabel() ?? 'Pembangunan'),
+                'title' => match (true) {
+                    $inv->isMonthly() => 'Iuran Rutin '.Carbon::createFromFormat('Y-m', $inv->billing_period)->translatedFormat('F Y'),
+                    $inv->isSpecial() => 'Iuran Khusus: '.($inv->notes ?? 'Kegiatan Warga'),
+                    default => 'Iuran Pembangunan: '.($inv->constructionProject?->project_type?->getLabel() ?? 'Pembangunan'),
+                },
                 'type' => $inv->invoice_type->value,
                 'due_date' => $inv->due_date?->translatedFormat('d M Y') ?? '-',
                 'is_overdue' => $inv->status === InvoiceStatus::Overdue || ($inv->due_date && $inv->due_date->isPast()),

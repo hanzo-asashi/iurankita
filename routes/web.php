@@ -14,6 +14,9 @@ Route::get('/cek-tagihan', [PublicBillingCheckController::class, 'search'])
 Route::get('/receipt/{payment}', [ReceiptController::class, 'show'])
     ->name('receipt.print');
 
+Route::post('/konfirmasi-pembayaran', [App\Http\Controllers\PublicPaymentConfirmationController::class, 'store'])
+    ->name('public.payment.confirm');
+
 Route::middleware('auth')->prefix('admin/reports/print')->name('reports.print.')->group(function (): void {
     Route::get('/monthly', [App\Http\Controllers\ReportPrintController::class, 'monthly'])->name('monthly');
     Route::get('/outstanding', [App\Http\Controllers\ReportPrintController::class, 'outstanding'])->name('outstanding');
@@ -21,4 +24,11 @@ Route::middleware('auth')->prefix('admin/reports/print')->name('reports.print.')
     Route::get('/construction', [App\Http\Controllers\ReportPrintController::class, 'construction'])->name('construction');
     Route::get('/expenses', [App\Http\Controllers\ReportPrintController::class, 'expenses'])->name('expenses');
     Route::get('/cash-book', [App\Http\Controllers\ReportPrintController::class, 'cashBook'])->name('cash-book');
+});
+
+Route::middleware('auth')->prefix('admin/export')->name('admin.export.')->group(function (): void {
+    Route::get('/households', [App\Http\Controllers\ExportController::class, 'households'])->name('households');
+    Route::get('/payments', [App\Http\Controllers\ExportController::class, 'payments'])->name('payments');
+    Route::get('/expenses', [App\Http\Controllers\ExportController::class, 'expenses'])->name('expenses');
+    Route::get('/outstanding', [App\Http\Controllers\ExportController::class, 'outstanding'])->name('outstanding');
 });

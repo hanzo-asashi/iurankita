@@ -58,40 +58,32 @@ Bukan merupakan tagihan bulanan berkala. Iuran ini hanya dikenakan apabila seora
 
 ### 🌐 Portal Publik & Warga (Landing Page)
 * **Cek Tagihan Mandiri:** Warga dapat mencari dan mengecek tagihan aktif serta riwayat pembayaran secara mandiri hanya dengan memilih Blok dan Nomor Rumah atau memasukkan Nomor KK.
+* **Konfirmasi Pembayaran Mandiri:** Warga dapat mengunggah bukti transfer, nama pengirim, dan bank secara mandiri langsung setelah membayar tanpa harus login.
 * **Denah Interaktif Del Mattappa Residence:** Visualisasi peta denah perumahan dengan fitur *lightbox viewer* (dukungan zoom, pan, dan layar penuh) untuk memudahkan pengenalan posisi kavling/blok.
 * **Transparansi Informasi:** Menampilkan rekening bank resmi kas perumahan, saluran pembayaran QRIS, serta kontak pengurus rukun warga.
 
 ### 🛠️ Filament Admin Panel
-* **Dashboard Finansial:**
+* **Dashboard Finansial & Peta Kavling:**
   * Metrik pemasukan bulan berjalan, total tunggakan aktif, dan persentase kepatuhan bayar.
+  * **Peta Kavling Visual (Lot Map Grid):** Pemetaan visual interaktif seluruh 59 kavling Del Mattappa Residence (Blok A, B, C, D) dengan warna status pembayaran real-time (Hijau = Lunas, Kuning = Sebagian, Merah = Menunggak, Abu-abu = Belum Dihuni) serta penanda renovasi aktif.
   * Grafik perbandingan penerimaan iuran rutin vs iuran pembangunan.
-  * Ringkasan status hunian (dihuni vs belum dihuni).
+* **Verifikasi Pembayaran Mandiri Warga (`PaymentConfirmation`):**
+  * Antrean verifikasi bukti transfer warga dengan badge notifikasi real-time di navigasi.
+  * Preview bukti transfer langsung di tabel dan persetujuan 1-klik yang otomatis melunasi tagihan dan menerbitkan kwitansi sah.
 * **Manajemen Data Warga (`Household`):**
   * Pencatatan nomor blok, nomor rumah, nama kepala keluarga, nomor KK, nomor telepon WhatsApp, dan status hunian.
-  * Tombol akses cepat denah perumahan langsung dari daftar dan formulir warga.
-* **Manajemen Proyek Pembangunan (`ConstructionProject`):**
-  * Pelacakan jenis renovasi (dapur, penambahan bangunan, dsb.), tanggal mulai, tanggal estimasi selesai, dan status proyek.
-  * Otomatisasi penerbitan invoice satu kali bayar (Rp 100.000) saat proyek didaftarkan, mencegah duplikasi invoice.
-* **Manajemen Tagihan (`Invoice`):**
-  * Nomor tagihan terstandar (`INV/YYYYMM/XXXX`).
-  * Status tagihan yang dinamis (`Belum Dibayar`, `Sebagian`, `Lunas`, `Jatuh Tempo`, `Dibatalkan`).
-  * Fasilitas *Mass Monthly Invoices Generator* untuk menerbitkan tagihan massal seluruh warga dengan satu klik.
-* **Pencatatan Pembayaran & Kwitansi (`Payment`):**
+  * Ekspor data seluruh warga ke format spreadsheet CSV yang ramah Microsoft Excel (UTF-8 BOM).
+* **Iuran Insidental / Kegiatan Warga (`Special Invoices`):**
+  * Penerbitan tagihan khusus serentak untuk seluruh rumah aktif (misal: Peringatan HUT RI, Gotong Royong, Perbaikan Fasilitas Lingkungan).
+* **Pencatatan Pembayaran, Kwitansi & Struk Mini (`Payment`):**
   * Multi-metode pembayaran: Tunai (Cash), Transfer Bank, dan QRIS.
-  * Penomoran kwitansi otomatis (`KWT/YYYYMM/XXXX`).
-  * Kwitansi cetak digital siap print atau disimpan sebagai PDF dengan kop resmi pengurus perumahan.
-* **Laporan Komprehensif:**
-  * Laporan Penerimaan Pembayaran (filter periode & metode bayar).
-  * Laporan Tagihan Bulanan.
-  * Laporan Tunggakan Warga.
-  * Laporan Iuran Pembangunan.
-  * Ekspor data ke format cetak/tabel.
-* **Pengaturan Fleksibel & Audit Trail:**
-  * Pengaturan identitas perumahan, rekening bank, dan nomor darurat.
-  * Master tarif dinamis.
-  * Pencatatan log aktivitas pengelola (Audit Log).
-* **Tampilan Form Fullwidth:**
-  * Seluruh layout formulir di admin panel didesain dengan format *fullwidth* yang rapi, ergonomis, dan nyaman digunakan baik di layar monitor lebar maupun tablet.
+  * **Kwitansi Digital Standar A4:** Dilengkapi QR code verifikasi keaslian dan tombol kirim WhatsApp 1-klik ke warga.
+  * **Struk Kasir Termal Mini (58mm / 80mm):** Format struk POS monospaced hemat kertas untuk printer Bluetooth portabel saat penagihan door-to-door.
+  * **Pembatalan Aman (*Void Payment*):** Membatalkan pembayaran yang salah input, otomatis memulihkan saldo dan status invoice, serta mencatat audit trail permanen.
+* **Ekspor Spreadsheet / CSV Lengkap:**
+  * Ekspor Data Warga, Riwayat Pembayaran, Pengeluaran Kas Operasional, dan Daftar Tunggakan Warga.
+* **Laporan Komprehensif & Buku Kas:**
+  * Laporan Penerimaan Pembayaran, Tagihan Bulanan, Daftar Tunggakan Warga, dan Buku Kas Masuk-Keluar.
 
 ---
 

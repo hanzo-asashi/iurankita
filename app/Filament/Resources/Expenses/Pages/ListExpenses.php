@@ -23,6 +23,12 @@ final class ListExpenses extends ListRecords
                 ->color('gray')
                 ->url(fn (): string => route('reports.print.expenses', ['month' => now()->format('Y-m')]))
                 ->openUrlInNewTab(),
+            Action::make('export_csv')
+                ->label('Ekspor CSV')
+                ->icon(Heroicon::OutlinedArrowDownTray)
+                ->color('gray')
+                ->url(fn (): string => route('admin.export.expenses'))
+                ->openUrlInNewTab(),
             CreateAction::make(),
         ];
     }

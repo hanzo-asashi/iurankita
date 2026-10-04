@@ -72,10 +72,16 @@ final class PaymentsTable
             ])
             ->recordActions([
                 Action::make('print')
-                    ->label('Cetak')
+                    ->label('Kwitansi')
                     ->icon(Heroicon::OutlinedPrinter)
                     ->color('primary')
                     ->url(fn (Payment $record): string => route('receipt.print', $record))
+                    ->openUrlInNewTab(),
+                Action::make('thermal')
+                    ->label('Struk Mini')
+                    ->icon(Heroicon::OutlinedReceiptPercent)
+                    ->color('gray')
+                    ->url(fn (Payment $record): string => route('receipt.print', ['payment' => $record, 'format' => 'thermal']))
                     ->openUrlInNewTab(),
                 Action::make('whatsapp')
                     ->label('Kirim WA')
@@ -105,6 +111,30 @@ final class PaymentsTable
                         return 'https://wa.me/'.$cleanPhone.'?text='.rawurlencode($text);
                     })
                     ->openUrlInNewTab(),
+                Action::make('void')
+                    ->label('Batalkan')
+                    ->icon(Heroicon::OutlinedTrash)
+                    ->color('danger')
+                    ->visible(fn (): bool => auth()->user()?->isAdmin() ?? false)
+                    ->requiresConfirmation()
+                    ->modalHeading('Batalkan Pembayaran (Void)')
+                    ->modalDescription('Apakah Anda yakin ingin membatalkan transaksi pembayaran ini? Saldo tagihan terkait akan otomatis dipulihkan dan status invoice diperbarui.')
+                    ->form([
+                        \Filament\Forms\Components\Textarea::make('reason')
+                            ->label('Alasan Pembatalan Transaksi')
+                            ->placeholder('Contoh: Salah input nominal, pembayaran ganda, atau salah memilih nomor rumah warga.')
+                            ->required(),
+                    ])
+                    ->action(function (Payment $record, array $data, \App\Services\Payment\PaymentRecorderService $paymentRecorder): void {
+                        $receiptNum = $record->receipt_number;
+                        $paymentRecorder->voidPayment($record, $data['reason']);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Pembayaran Berhasil Dibatalkan')
+                            ->body("Kwitansi {$receiptNum} telah dibatalkan dan saldo tagihan warga telah dipulihkan.")
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([]);
     }

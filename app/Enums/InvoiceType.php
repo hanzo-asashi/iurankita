@@ -11,12 +11,14 @@ enum InvoiceType: string implements HasColor, HasLabel
 {
     case Monthly = 'monthly';
     case Construction = 'construction';
+    case Special = 'special';
 
     public function getLabel(): ?string
     {
         return match ($this) {
             self::Monthly => 'Iuran Bulanan',
             self::Construction => 'Iuran Pembangunan',
+            self::Special => 'Iuran Khusus / Insidental',
         };
     }
 
@@ -25,6 +27,7 @@ enum InvoiceType: string implements HasColor, HasLabel
         return match ($this) {
             self::Monthly => 'info',
             self::Construction => 'warning',
+            self::Special => 'success',
         };
     }
 }

@@ -95,4 +95,48 @@ final class PaymentRecorderService
             return $payment;
         });
     }
+
+    public function voidPayment(Payment $payment, string $reason, ?int $voidedBy = null): void
+    {
+        $cleanReason = mb_trim($reason);
+        if ($cleanReason === '') {
+            throw new InvalidArgumentException('Alasan pembatalan pembayaran wajib diisi.');
+        }
+
+        DB::transaction(function () use ($payment, $cleanReason, $voidedBy): void {
+            /** @var Invoice $lockedInvoice */
+            $lockedInvoice = Invoice::query()->where('id', $payment->invoice_id)->lockForUpdate()->firstOrFail();
+
+            $revertedAmountPaid = max(0, $lockedInvoice->amount_paid - $payment->amount);
+            $revertedBalance = $lockedInvoice->total_amount - $revertedAmountPaid;
+
+            if ($revertedAmountPaid === 0) {
+                $revertedStatus = ($lockedInvoice->due_date && $lockedInvoice->due_date->isPast())
+                    ? InvoiceStatus::Overdue
+                    : InvoiceStatus::Unpaid;
+            } else {
+                $revertedStatus = InvoiceStatus::Partial;
+            }
+
+            $lockedInvoice->update([
+                'amount_paid' => $revertedAmountPaid,
+                'balance' => $revertedBalance,
+                'status' => $revertedStatus,
+            ]);
+
+            $paymentData = $payment->toArray();
+            $receiptNum = $payment->receipt_number;
+            $amount = $payment->amount;
+            $operatorId = $voidedBy ?? Auth::id();
+
+            AuditService::log(
+                action: 'void_payment',
+                model: $payment,
+                oldValues: $paymentData,
+                notes: "Pembayaran {$receiptNum} (Rp".number_format($amount, 0, ',', '.').") untuk invoice {$lockedInvoice->invoice_number} dibatalkan (void). Alasan: {$cleanReason} (Operator ID: {$operatorId})"
+            );
+
+            $payment->delete();
+        });
+    }
 }

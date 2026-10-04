@@ -77,9 +77,22 @@ final class Invoice extends Model
      * @param  Builder<Invoice>  $query
      * @return Builder<Invoice>
      */
+    /**
+     * @param  Builder<Invoice>  $query
+     * @return Builder<Invoice>
+     */
     public function scopeConstruction(Builder $query): Builder
     {
         return $query->where('invoice_type', InvoiceType::Construction);
+    }
+
+    /**
+     * @param  Builder<Invoice>  $query
+     * @return Builder<Invoice>
+     */
+    public function scopeSpecial(Builder $query): Builder
+    {
+        return $query->where('invoice_type', InvoiceType::Special);
     }
 
     /**
@@ -108,6 +121,11 @@ final class Invoice extends Model
     public function isConstruction(): bool
     {
         return $this->invoice_type === InvoiceType::Construction;
+    }
+
+    public function isSpecial(): bool
+    {
+        return $this->invoice_type === InvoiceType::Special;
     }
 
     public function isPaid(): bool

@@ -25,6 +25,12 @@ final class ListHouseholds extends ListRecords
                 ->modalContent(view('filament.components.denah-modal'))
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel('Tutup'),
+            Action::make('export_csv')
+                ->label('Ekspor Data Warga (CSV)')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('gray')
+                ->url(fn (): string => route('admin.export.households'))
+                ->openUrlInNewTab(),
             CreateAction::make()
                 ->label('Tambah KK / Rumah'),
         ];

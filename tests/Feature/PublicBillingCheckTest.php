@@ -57,3 +57,37 @@ it('allows residents to check billing status with various code formats', functio
     expect($response->json('household.masked_name'))->not->toBe('Budi Santoso');
     expect($response->json('household.masked_name'))->toContain('*');
 });
+
+it('includes special incidental invoices in public billing check', function (): void {
+    $household = Household::factory()->create([
+        'house_code' => 'C-08',
+        'is_active' => true,
+    ]);
+
+    Invoice::create([
+        'household_id' => $household->id,
+        'invoice_number' => 'INV-SPE-2026-0001',
+        'invoice_type' => InvoiceType::Special,
+        'billing_period' => 'SPE-hut-ri-81',
+        'issue_date' => now(),
+        'due_date' => now()->addDays(14),
+        'subtotal' => 75000,
+        'total_amount' => 75000,
+        'amount_paid' => 0,
+        'balance' => 75000,
+        'status' => InvoiceStatus::Unpaid,
+        'notes' => 'Iuran Peringatan HUT RI Ke-81',
+    ]);
+
+    $response = $this->getJson(route('public.billing.check', ['code' => 'C-08']));
+
+    $response->assertOk()
+        ->assertJson([
+            'success' => true,
+            'total_outstanding' => 75000,
+            'unpaid_count' => 1,
+        ]);
+
+    expect($response->json('unpaid_invoices.0.title'))->toContain('Iuran Khusus: Iuran Peringatan HUT RI Ke-81');
+    expect($response->json('unpaid_invoices.0.type'))->toBe('special');
+});

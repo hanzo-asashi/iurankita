@@ -289,6 +289,13 @@ final class OutstandingReport extends Page implements HasTable
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel('Tutup'),
 
+            Action::make('export_csv')
+                ->label('Ekspor CSV')
+                ->icon(Heroicon::OutlinedArrowDownTray)
+                ->color('gray')
+                ->url(fn (): string => route('admin.export.outstanding'))
+                ->openUrlInNewTab(),
+
             Action::make('print')
                 ->label('Cetak Rekap Fisik (A4)')
                 ->icon(Heroicon::OutlinedPrinter)
