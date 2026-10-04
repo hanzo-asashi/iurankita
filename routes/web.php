@@ -13,3 +13,10 @@ Route::get('/cek-tagihan', [PublicBillingCheckController::class, 'search'])
 
 Route::get('/receipt/{payment}', [ReceiptController::class, 'show'])
     ->name('receipt.print');
+
+Route::middleware('auth')->prefix('admin/reports/print')->name('reports.print.')->group(function (): void {
+    Route::get('/monthly', [App\Http\Controllers\ReportPrintController::class, 'monthly'])->name('monthly');
+    Route::get('/outstanding', [App\Http\Controllers\ReportPrintController::class, 'outstanding'])->name('outstanding');
+    Route::get('/payments', [App\Http\Controllers\ReportPrintController::class, 'payments'])->name('payments');
+    Route::get('/construction', [App\Http\Controllers\ReportPrintController::class, 'construction'])->name('construction');
+});

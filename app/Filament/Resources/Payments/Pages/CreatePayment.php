@@ -25,6 +25,7 @@ final class CreatePayment extends CreateRecord
             paymentMethod: PaymentMethod::from($data['payment_method']),
             paymentDate: $data['payment_date'],
             referenceNumber: $data['reference_number'] ?? null,
+            proofPath: $data['proof_path'] ?? null,
             notes: $data['notes'] ?? null,
         );
     }

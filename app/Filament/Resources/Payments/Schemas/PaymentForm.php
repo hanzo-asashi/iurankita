@@ -41,12 +41,22 @@ final class PaymentForm
                                 ->searchable()
                                 ->preload()
                                 ->native(false)
+                                ->live()
+                                ->afterStateUpdated(function (?int $state, \Filament\Schemas\Components\Utilities\Set $set): void {
+                                    if ($state) {
+                                        $inv = Invoice::find($state);
+                                        if ($inv) {
+                                            $set('amount', $inv->balance);
+                                        }
+                                    }
+                                })
                                 ->required(),
                             TextInput::make('amount')
                                 ->label('Nominal Pembayaran (Rp)')
                                 ->numeric()
                                 ->prefix('Rp')
                                 ->minValue(1)
+                                ->helperText('Nominal pembayaran default otomatis terisi dengan sisa saldo tagihan.')
                                 ->required(),
                         ]),
                         Grid::make(2)->schema([
@@ -68,6 +78,13 @@ final class PaymentForm
                                 ->label('Catatan Pembayaran')
                                 ->rows(2),
                         ]),
+                        \Filament\Forms\Components\FileUpload::make('proof_path')
+                            ->label('Bukti Pembayaran / Slip Transfer (Foto/PDF)')
+                            ->image()
+                            ->directory('payment-proofs')
+                            ->maxSize(5120)
+                            ->helperText('Unggah foto slip transfer, struk ATM, atau bukti screenshot pembayaran bila ada.')
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

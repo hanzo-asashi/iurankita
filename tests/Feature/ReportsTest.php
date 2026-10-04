@@ -77,3 +77,25 @@ it('can render generate monthly invoices page without errors and fill form', fun
         ->assertSuccessful()
         ->assertSee('Oktober 2026');
 });
+
+it('can render physical print report pages for monthly, outstanding, payments, and construction', function (): void {
+    $this->actingAs($this->admin)
+        ->get(route('reports.print.monthly'))
+        ->assertOk()
+        ->assertSee('Rekap Tagihan Iuran Bulanan');
+
+    $this->actingAs($this->admin)
+        ->get(route('reports.print.outstanding'))
+        ->assertOk()
+        ->assertSee('Laporan Daftar Tunggakan Iuran Warga');
+
+    $this->actingAs($this->admin)
+        ->get(route('reports.print.payments'))
+        ->assertOk()
+        ->assertSee('Laporan Penerimaan Kas Iuran');
+
+    $this->actingAs($this->admin)
+        ->get(route('reports.print.construction'))
+        ->assertOk()
+        ->assertSee('Laporan Rekapitulasi Iuran Pembangunan & Renovasi');
+});

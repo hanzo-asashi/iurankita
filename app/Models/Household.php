@@ -25,6 +25,9 @@ final class Household extends Model
         'phone',
         'address',
         'occupancy_status',
+        'ownership_status',
+        'owner_name',
+        'owner_phone',
         'notes',
         'is_active',
     ];

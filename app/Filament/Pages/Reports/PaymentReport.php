@@ -8,6 +8,7 @@ use App\Enums\InvoiceType;
 use App\Enums\PaymentMethod;
 use App\Models\Payment;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -130,5 +131,17 @@ final class PaymentReport extends Page implements HasTable
                             ->when($data['until'], fn (Builder $q, $date) => $q->whereDate('payment_date', '<=', $date));
                     }),
             ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('print')
+                ->label('Cetak Rekap Fisik (A4)')
+                ->icon(Heroicon::OutlinedPrinter)
+                ->color('primary')
+                ->url(fn (): string => route('reports.print.payments', ['month' => now()->format('Y-m')]))
+                ->openUrlInNewTab(),
+        ];
     }
 }

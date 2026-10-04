@@ -58,7 +58,10 @@ final class HouseholdResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            RelationManagers\InvoicesRelationManager::class,
+            RelationManagers\ConstructionProjectsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
@@ -66,6 +69,7 @@ final class HouseholdResource extends Resource
         return [
             'index' => ListHouseholds::route('/'),
             'create' => CreateHousehold::route('/create'),
+            'view' => Pages\ViewHousehold::route('/{record}'),
             'edit' => EditHousehold::route('/{record}/edit'),
         ];
     }

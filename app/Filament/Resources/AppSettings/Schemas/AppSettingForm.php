@@ -69,6 +69,29 @@ final class AppSettingForm
                                 ->default('#0F766E'),
                         ]),
                     ]),
+                Section::make('Informasi Rekening Bank & QRIS Pembayaran')
+                    ->description('Rekening kas resmi dan barcode QRIS yang akan ditampilkan kepada warga untuk transfer iuran.')
+                    ->columnSpanFull()
+                    ->schema([
+                        Grid::make(3)->schema([
+                            TextInput::make('bank_name')
+                                ->label('Nama Bank')
+                                ->placeholder('Contoh: Bank BRI / BCA / Mandiri'),
+                            TextInput::make('bank_account_number')
+                                ->label('Nomor Rekening')
+                                ->placeholder('Contoh: 5012-01-002345-53-1'),
+                            TextInput::make('bank_account_holder')
+                                ->label('Atas Nama Rekening')
+                                ->placeholder('Contoh: Kas Del Mattappa Residence'),
+                        ]),
+                        \Filament\Forms\Components\FileUpload::make('qris_image')
+                            ->label('Gambar Barcode QRIS Kas')
+                            ->image()
+                            ->directory('qris')
+                            ->imageEditor()
+                            ->helperText('Unggah gambar QRIS statis kas perumahan untuk mempermudah warga scan barcode bayar.')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

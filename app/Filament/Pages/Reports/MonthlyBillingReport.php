@@ -103,4 +103,16 @@ final class MonthlyBillingReport extends Page implements HasTable
                     ),
             ]);
     }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('print')
+                ->label('Cetak Rekap Fisik (A4)')
+                ->icon(Heroicon::OutlinedPrinter)
+                ->color('primary')
+                ->url(fn (): string => route('reports.print.monthly', ['period' => now()->format('Y-m')]))
+                ->openUrlInNewTab(),
+        ];
+    }
 }

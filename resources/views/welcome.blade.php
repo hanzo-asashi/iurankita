@@ -930,6 +930,35 @@
                         </div>
                     </template>
 
+                    {{-- Official Payment Destination Card (Bank & QRIS) --}}
+                    <template x-if="data?.total_outstanding > 0 && data?.payment_destination">
+                        <div x-data="{ copied: false }" class="p-4 sm:p-5 rounded-2xl bg-teal-50/80 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/60">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-teal-900 dark:text-teal-200 mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                <span>Rekening Kas Resmi Pembayaran</span>
+                            </h4>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-teal-100 dark:border-teal-900/50">
+                                <div>
+                                    <span class="inline-block text-xs font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider" x-text="data.payment_destination.bank_name"></span>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-lg sm:text-xl font-mono font-black text-slate-900 dark:text-white" x-text="data.payment_destination.bank_account_number"></span>
+                                        <button type="button" @click="navigator.clipboard.writeText(data.payment_destination.bank_account_number); copied = true; setTimeout(() => copied = false, 2000)" class="px-2.5 py-1 rounded-lg text-slate-600 dark:text-slate-300 hover:text-teal-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-xs font-semibold inline-flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                                            <span x-show="!copied">Salin No. Rek</span>
+                                            <span x-show="copied" class="text-teal-600 font-bold" style="display: none;">Tersalin!</span>
+                                        </button>
+                                    </div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5" x-text="'Atas Nama: ' + data.payment_destination.bank_account_holder"></div>
+                                </div>
+                                <template x-if="data.payment_destination.qris_image_url">
+                                    <div class="text-center">
+                                        <img :src="data.payment_destination.qris_image_url" alt="QRIS" class="w-24 h-24 object-contain rounded-lg border border-slate-200 dark:border-slate-700 bg-white p-1 mx-auto">
+                                        <span class="text-[10px] font-bold text-slate-500 mt-1 block">Scan QRIS</span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
                     {{-- Call to Action Buttons --}}
                     <div class="flex flex-col sm:flex-row gap-3 justify-center items-center pt-2">
                         <template x-if="data?.total_outstanding > 0">

@@ -30,11 +30,22 @@ final class MonthlyStatsOverview extends StatsOverviewWidget
         $currentMonthPaid = $currentMonthInvoices->sum('amount_paid');
         $currentMonthBalance = $currentMonthInvoices->sum('balance');
 
-        // Total seluruh tunggakan bulanan (termasuk bulan-bulan sebelumnya)
         $totalAllTimeMonthlyOutstanding = (int) Invoice::query()
             ->where('invoice_type', InvoiceType::Monthly)
             ->whereIn('status', [InvoiceStatus::Unpaid, InvoiceStatus::Partial, InvoiceStatus::Overdue])
             ->sum('balance');
+
+        $currentMonthExpense = (int) \App\Models\Expense::query()
+            ->whereYear('expense_date', now()->year)
+            ->whereMonth('expense_date', now()->month)
+            ->sum('amount');
+
+        $totalReceived = (int) \App\Models\Payment::query()
+            ->whereYear('payment_date', now()->year)
+            ->whereMonth('payment_date', now()->month)
+            ->sum('amount');
+
+        $netCashFlow = $totalReceived - $currentMonthExpense;
 
         return [
             Stat::make("Tagihan Rutin ({$monthName})", 'Rp '.number_format($totalBilled, 0, ',', '.'))
@@ -42,15 +53,20 @@ final class MonthlyStatsOverview extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('info'),
 
-            Stat::make('Pembayaran Diterima Bulan Ini', 'Rp '.number_format($currentMonthPaid, 0, ',', '.'))
-                ->description("{$paidCount} rumah telah lunas")
-                ->descriptionIcon('heroicon-o-check-circle')
+            Stat::make('Penerimaan Kas Bulan Ini', 'Rp '.number_format($totalReceived, 0, ',', '.'))
+                ->description('Iuran rutin & pembangunan')
+                ->descriptionIcon('heroicon-o-arrow-down-tray')
                 ->color('success'),
 
-            Stat::make('Tunggakan Iuran Bulanan', 'Rp '.number_format($totalAllTimeMonthlyOutstanding, 0, ',', '.'))
-                ->description("{$unpaidCount} rumah belum lunas ({$monthName})")
-                ->descriptionIcon('heroicon-o-exclamation-circle')
+            Stat::make('Pengeluaran Kas Bulan Ini', 'Rp '.number_format($currentMonthExpense, 0, ',', '.'))
+                ->description('Operasional, sampah, kebersihan')
+                ->descriptionIcon('heroicon-o-arrow-up-tray')
                 ->color('danger'),
+
+            Stat::make('Saldo Kas Bersih Bulan Ini', 'Rp '.number_format($netCashFlow, 0, ',', '.'))
+                ->description('Penerimaan dikurangi pengeluaran')
+                ->descriptionIcon('heroicon-o-banknotes')
+                ->color($netCashFlow >= 0 ? 'success' : 'danger'),
         ];
     }
 }

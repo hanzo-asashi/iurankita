@@ -110,7 +110,7 @@ final class PublicBillingCheckController extends Controller
             $adminPhone = '62'.mb_substr($adminPhone, 1);
         }
 
-        $waMsg = "Halo Pengurus {$setting->complex_name},\n\nSaya ingin konfirmasi tagihan iuran untuk Rumah {$household->house_code} (Blok {$household->block} No. {$household->house_number}).\nTotal tagihan tertunggak: Rp".number_format($totalOutstanding, 0, ',', '.').".\n\nMohon info nomor rekening pembayaran. Terima kasih.";
+        $waMsg = "Halo Pengurus {$setting->complex_name},\n\nSaya ingin konfirmasi pembayaran tagihan iuran untuk Rumah {$household->house_code} (Blok {$household->block} No. {$household->house_number}).\nTotal tagihan: Rp".number_format($totalOutstanding, 0, ',', '.').".\n\n(Berikut terlampir bukti transfer). Terima kasih.";
         $waConfirmUrl = 'https://wa.me/'.$adminPhone.'?text='.rawurlencode($waMsg);
 
         return response()->json([
@@ -143,6 +143,12 @@ final class PublicBillingCheckController extends Controller
                 'balance' => $inv->balance,
                 'formatted_balance' => 'Rp'.number_format($inv->balance, 0, ',', '.'),
             ]),
+            'payment_destination' => [
+                'bank_name' => $setting->bank_name ?? 'Bank BRI',
+                'bank_account_number' => $setting->bank_account_number ?? '5012-01-002345-53-1',
+                'bank_account_holder' => $setting->bank_account_holder ?? 'Kas Del Mattappa Residence',
+                'qris_image_url' => $setting->qris_image ? asset('storage/'.$setting->qris_image) : null,
+            ],
             'recent_paid' => $recentPaid,
             'wa_confirm_url' => $waConfirmUrl,
         ]);

@@ -74,7 +74,27 @@ final class HouseholdForm
                                 ->helperText('Dihuni: Rp50.000/bln | Belum Dihuni: Rp35.000/bln')
                                 ->native(false)
                                 ->required(),
+                            Select::make('ownership_status')
+                                ->label('Status Kepemilikan')
+                                ->options([
+                                    'owner' => 'Milik Sendiri (Dihuni Pemilik)',
+                                    'rent' => 'Sewa / Kontrak',
+                                ])
+                                ->default('owner')
+                                ->native(false)
+                                ->live(),
                         ]),
+                        Grid::make(2)
+                            ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get): bool => $get('ownership_status') === 'rent')
+                            ->schema([
+                                TextInput::make('owner_name')
+                                    ->label('Nama Pemilik Rumah')
+                                    ->placeholder('Nama pemilik asli rumah'),
+                                TextInput::make('owner_phone')
+                                    ->label('No. Telp/WA Pemilik Rumah')
+                                    ->tel()
+                                    ->placeholder('Kontak pemilik rumah'),
+                            ]),
                         Textarea::make('address')
                             ->label('Alamat Lengkap')
                             ->rows(2)

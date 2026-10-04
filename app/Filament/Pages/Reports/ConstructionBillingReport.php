@@ -10,6 +10,7 @@ use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Models\Invoice;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -124,5 +125,17 @@ final class ConstructionBillingReport extends Page implements HasTable
                         fn (Builder $q, $value) => $q->whereRelation('constructionProject', 'project_type', $value)
                     )),
             ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('print')
+                ->label('Cetak Rekap Fisik (A4)')
+                ->icon(Heroicon::OutlinedPrinter)
+                ->color('primary')
+                ->url(fn (): string => route('reports.print.construction'))
+                ->openUrlInNewTab(),
+        ];
     }
 }

@@ -97,6 +97,74 @@ final class HouseholdsTable
                     )),
             ])
             ->recordActions([
+                \Filament\Actions\ViewAction::make(),
+                \Filament\Actions\Action::make('advance_payment')
+                    ->label('Bayar di Muka')
+                    ->icon(\Filament\Support\Icons\Heroicon::OutlinedSparkles)
+                    ->color('success')
+                    ->modalHeading(fn (Household $record) => "Bayar Iuran di Muka — {$record->house_code} ({$record->head_of_family})")
+                    ->modalDescription('Terbitkan tagihan dan langsung catat pembayaran lunas sekaligus untuk beberapa bulan ke depan.')
+                    ->schema(fn (Household $record): array => [
+                        \Filament\Forms\Components\Select::make('months')
+                            ->label('Berapa Bulan ke Depan?')
+                            ->options([
+                                1 => '1 Bulan ke Depan',
+                                2 => '2 Bulan ke Depan',
+                                3 => '3 Bulan ke Depan',
+                                6 => '6 Bulan (Setengah Tahun)',
+                                12 => '12 Bulan (1 Tahun Penuh)',
+                            ])
+                            ->default(3)
+                            ->required()
+                            ->native(false)
+                            ->live(),
+                        \Filament\Forms\Components\Placeholder::make('rate_info')
+                            ->label('Perhitungan Estimasi')
+                            ->content(function (\Filament\Forms\Get $get) use ($record): string {
+                                $months = (int) ($get('months') ?? 3);
+                                $rate = $record->occupancy_status === OccupancyStatus::Occupied ? 50000 : 35000;
+                                $total = $rate * $months;
+                                $label = $record->occupancy_status->getLabel();
+
+                                return 'Total: Rp'.number_format($total, 0, ',', '.')." ({$months} bulan x Rp".number_format($rate, 0, ',', '.')." [{$label}])";
+                            }),
+                        \Filament\Forms\Components\Select::make('payment_method')
+                            ->label('Metode Pembayaran')
+                            ->options(\App\Enums\PaymentMethod::class)
+                            ->default(\App\Enums\PaymentMethod::Cash)
+                            ->native(false)
+                            ->required(),
+                        \Filament\Forms\Components\DatePicker::make('payment_date')
+                            ->label('Tanggal Pembayaran')
+                            ->default(now())
+                            ->required(),
+                        \Filament\Forms\Components\TextInput::make('reference_number')
+                            ->label('Nomor Bukti Transfer / Referensi'),
+                        \Filament\Forms\Components\FileUpload::make('proof_path')
+                            ->label('Bukti Pembayaran / Struk')
+                            ->image()
+                            ->directory('payment-proofs'),
+                        \Filament\Forms\Components\Textarea::make('notes')
+                            ->label('Catatan Pembayaran')
+                            ->rows(2),
+                    ])
+                    ->action(function (Household $record, array $data, \App\Services\Billing\AdvanceBillingService $advanceService): void {
+                        $result = $advanceService->payInAdvance(
+                            household: $record,
+                            monthsCount: (int) $data['months'],
+                            paymentMethod: \App\Enums\PaymentMethod::from($data['payment_method']),
+                            paymentDate: $data['payment_date'],
+                            referenceNumber: $data['reference_number'] ?? null,
+                            proofPath: $data['proof_path'] ?? null,
+                            notes: $data['notes'] ?? null,
+                        );
+
+                        Notification::make()
+                            ->title('Pembayaran di Muka Berhasil')
+                            ->body("Sebanyak {$result['invoices_count']} bulan tagihan iuran ({$record->house_code}) senilai Rp".number_format($result['total_amount'], 0, ',', '.').' berhasil dilunasi.')
+                            ->success()
+                            ->send();
+                    }),
                 EditAction::make(),
                 DeleteAction::make()
                     ->disabled(fn (Household $record): bool => $record->invoices()->exists())

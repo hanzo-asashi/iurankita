@@ -147,6 +147,11 @@ final class InvoicesTable
                             ->required(),
                         TextInput::make('reference_number')
                             ->label('Nomor Bukti Transfer / Referensi'),
+                        \Filament\Forms\Components\FileUpload::make('proof_path')
+                            ->label('Lampiran Struk / Bukti Bayar')
+                            ->image()
+                            ->directory('payment-proofs')
+                            ->maxSize(5120),
                         Textarea::make('notes')
                             ->label('Catatan Pembayaran')
                             ->rows(2),
@@ -158,6 +163,7 @@ final class InvoicesTable
                             paymentMethod: PaymentMethod::from($data['payment_method']),
                             paymentDate: $data['payment_date'],
                             referenceNumber: $data['reference_number'] ?? null,
+                            proofPath: $data['proof_path'] ?? null,
                             notes: $data['notes'] ?? null,
                         );
 
@@ -167,6 +173,30 @@ final class InvoicesTable
                             ->success()
                             ->send();
                     }),
+                Action::make('send_whatsapp')
+                    ->label('Kirim WA')
+                    ->icon(Heroicon::OutlinedChatBubbleLeftEllipsis)
+                    ->color('warning')
+                    ->visible(fn (Invoice $record): bool => $record->balance > 0 && ! empty($record->household?->phone))
+                    ->url(function (Invoice $record): string {
+                        $setting = \App\Models\AppSetting::current();
+                        $phone = preg_replace('/[^0-9]/', '', (string) $record->household->phone);
+                        if (str_starts_with($phone, '0')) {
+                            $phone = '62'.mb_substr($phone, 1);
+                        }
+
+                        $rincian = $record->isMonthly()
+                            ? 'Iuran Rutin Periode '.($record->billing_period ? Carbon::createFromFormat('Y-m', $record->billing_period)->translatedFormat('F Y') : '-')
+                            : 'Iuran Pembangunan: '.($record->constructionProject?->project_type?->getLabel() ?? 'Pembangunan (1x Sekali Bayar)');
+
+                        $dueDate = $record->due_date ? $record->due_date->translatedFormat('d M Y') : 'Segera';
+                        $bankInfo = $setting->bank_name ? "Pembayaran dapat ditransfer ke:\n*{$setting->bank_name} {$setting->bank_account_number}*\na.n. {$setting->bank_account_holder}\n\n" : '';
+
+                        $msg = "Halo Bapak/Ibu {$record->household->head_of_family} (Rumah {$record->household->house_code}),\n\nKami dari Pengurus {$setting->complex_name} menginformasikan tagihan iuran:\n- Tagihan: *{$rincian}*\n- Nominal: *Rp".number_format($record->balance, 0, ',', '.')."*\n- Jatuh Tempo: {$dueDate}\n\n{$bankInfo}Mohon konfirmasi dan kirimkan bukti transfer setelah pembayaran.\n\nTerima kasih atas partisipasi aktif Bapak/Ibu.";
+
+                        return 'https://wa.me/'.$phone.'?text='.rawurlencode($msg);
+                    })
+                    ->openUrlInNewTab(),
             ]);
     }
 }
