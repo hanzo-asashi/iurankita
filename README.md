@@ -210,6 +210,6 @@ vendor/bin/pint --format agent
 
 ## 👥 Pengembang & Hak Cipta
 
-* **Pengembang:** **BlackID85** ([Hansen Makangiras](https://github.com/hansenmakangiras) / Hanzo Alpha)
+* **Pengembang:** **Hanzo Asashi** ([Hansen Makangiras](https://github.com/hanzo-asashi) / Hanzo Asashi)
 * **Kawasan Percontohan:** Paguyuban Warga **Del Mattappa Residence**, Kab. Soppeng
 * **Lisensi:** Open-source di bawah lisensi [MIT License](LICENSE).
