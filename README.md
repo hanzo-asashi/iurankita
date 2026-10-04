@@ -1,7 +1,5 @@
-# IuranKita
-
 <p align="center">
-  <img src="public/images/logo/49-dark.png" alt="Logo IuranKita" width="180">
+  <img src="public/images/logo/49-dark.png" alt="Logo IuranKita" width="200">
 </p>
 
 <p align="center">
@@ -15,7 +13,7 @@
   <img src="https://img.shields.io/badge/TailwindCSS-4.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS 4">
   <img src="https://img.shields.io/badge/PHP-8.5-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.5">
   <img src="https://img.shields.io/badge/Pest-Coverage_100%25-green?style=for-the-badge" alt="Pest Tests">
-  <img src="https://img.shields.io/badge/Author-BlackID85-007ACC?style=for-the-badge" alt="Author BlackID85">
+  <img src="https://img.shields.io/badge/Author-BlackID85-007ACC?style=for-the-badge" alt="Author Hanzo Asashi">
 </p>
 
 ---
@@ -126,7 +124,7 @@ Bukan merupakan tagihan bulanan berkala. Iuran ini hanya dikenakan apabila seora
 
 1. **Clone repositori:**
    ```bash
-   git clone https://github.com/BlackID85/iurankita.git
+   git clone https://github.com/hanzo-asashi/iurankita.git
    cd iurankita
    ```
 
