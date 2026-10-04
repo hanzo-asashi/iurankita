@@ -13,7 +13,6 @@
   <img src="https://img.shields.io/badge/TailwindCSS-4.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS 4">
   <img src="https://img.shields.io/badge/PHP-8.5-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.5">
   <img src="https://img.shields.io/badge/Pest-Coverage_100%25-green?style=for-the-badge" alt="Pest Tests">
-  <img src="https://img.shields.io/badge/Author-BlackID85-007ACC?style=for-the-badge" alt="Author Hanzo Asashi">
 </p>
 
 ---
@@ -210,6 +209,6 @@ vendor/bin/pint --format agent
 
 ## 👥 Pengembang & Hak Cipta
 
-* **Pengembang:** **Hanzo Asashi** ([Hansen Makangiras](https://github.com/hanzo-asashi) / Hanzo Asashi)
+* **Pengembang:** [Hanzo Asashi](https://github.com/hanzo-asashi)
 * **Kawasan Percontohan:** Paguyuban Warga **Del Mattappa Residence**, Kab. Soppeng
 * **Lisensi:** Open-source di bawah lisensi [MIT License](LICENSE).
