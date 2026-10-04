@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Resources\FeeRates\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -25,20 +24,32 @@ final class FeeRateForm
                     ->columnSpanFull()
                     ->schema([
                         Grid::make(2)->schema([
-                            Select::make('code')
-                                ->label('Kode Tarif')
-                                ->options([
-                                    'monthly_occupied' => 'Iuran Rutin Rumah Dihuni (Bulanan)',
-                                    'monthly_unoccupied' => 'Iuran Rutin Rumah Belum Dihuni (Bulanan)',
-                                    'construction_one_time' => 'Iuran Pembangunan (Sekali Bayar)',
-                                ])
-                                ->native(false)
-                                ->required(),
                             TextInput::make('name')
                                 ->label('Nama Tarif')
-                                ->placeholder('Contoh: Iuran Pembangunan — Sekali Bayar')
+                                ->placeholder('Contoh: Iuran Rutin Rumah Dihuni / Iuran Pengelolaan Sampah')
                                 ->required()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function (string $operation, ?string $state, \Filament\Schemas\Components\Utilities\Set $set, \Filament\Schemas\Components\Utilities\Get $get): void {
+                                    if ($operation === 'create' && blank($get('code')) && filled($state)) {
+                                        $set('code', \Illuminate\Support\Str::slug($state, '_'));
+                                    }
+                                }),
+                            TextInput::make('code')
+                                ->label('Kode Tarif')
+                                ->placeholder('Contoh: monthly_occupied, iuran_sampah, keamanan')
+                                ->helperText('Kode unik identitas tarif (huruf kecil & garis bawah). Preset bawaan: monthly_occupied, monthly_unoccupied, construction_one_time.')
+                                ->datalist([
+                                    'monthly_occupied',
+                                    'monthly_unoccupied',
+                                    'construction_one_time',
+                                    'iuran_sampah',
+                                    'iuran_keamanan',
+                                    'dana_sosial',
+                                    'iuran_kegiatan',
+                                ])
+                                ->required()
+                                ->maxLength(50),
                         ]),
                         Grid::make(3)->schema([
                             TextInput::make('amount')

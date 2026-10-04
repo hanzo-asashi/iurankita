@@ -24,26 +24,25 @@ final class FeeRatesTable
                     ->searchable()
                     ->weight('bold'),
                 TextColumn::make('code')
-                    ->label('Sifat Iuran')
+                    ->label('Kode Tarif')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'monthly_occupied' => 'Bulanan (Dihuni)',
-                        'monthly_unoccupied' => 'Bulanan (Belum Dihuni)',
-                        'construction_one_time' => 'Sekali Bayar',
-                        default => $state,
-                    })
+                    ->searchable()
+                    ->sortable()
                     ->color(fn (string $state): string => match ($state) {
+                        'monthly_occupied' => 'success',
+                        'monthly_unoccupied' => 'info',
                         'construction_one_time' => 'warning',
-                        default => 'info',
+                        default => 'gray',
                     }),
                 TextColumn::make('amount')
                     ->label('Nominal')
                     ->formatStateUsing(function (int $state, FeeRate $record): string {
                         $rupiah = 'Rp'.number_format($state, 0, ',', '.');
 
-                        return match ($record->code) {
-                            'construction_one_time' => "{$rupiah} (sekali bayar)",
-                            default => "{$rupiah} / bulan",
+                        return match (true) {
+                            $record->code === 'construction_one_time' => "{$rupiah} (sekali bayar)",
+                            str_contains($record->code, 'monthly') => "{$rupiah} / bulan",
+                            default => $rupiah,
                         };
                     })
                     ->sortable()

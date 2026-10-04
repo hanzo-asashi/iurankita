@@ -58,3 +58,22 @@ it('can render the edit fee rate page', function () {
     ])
         ->assertOk();
 });
+
+it('can create a new custom fee rate with arbitrary code and name', function () {
+    livewire(CreateFeeRate::class)
+        ->fillForm([
+            'name' => 'Iuran Pengelolaan Sampah',
+            'code' => 'iuran_sampah',
+            'amount' => 20000,
+            'effective_from' => now()->toDateString(),
+            'is_active' => true,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $this->assertDatabaseHas('fee_rates', [
+        'code' => 'iuran_sampah',
+        'name' => 'Iuran Pengelolaan Sampah',
+        'amount' => 20000,
+    ]);
+});
