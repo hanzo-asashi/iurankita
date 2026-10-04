@@ -29,5 +29,8 @@ it('can render the lot map dashboard page with all blocks and lot statistics', f
         ->assertSee('BLOK B')
         ->assertSee('BLOK C')
         ->assertSee('BLOK D')
-        ->assertSee('Total Kavling');
+        ->assertSee('Total Kavling')
+        ->assertSee('house_code=A-05')
+        ->assertSee('block=A')
+        ->assertSee('house_number=05');
 });

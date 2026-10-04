@@ -128,7 +128,7 @@ final class LotMapDashboard extends Page
                 $blocks[$blockName][] = [
                     'code' => sprintf('%s-%02d', $blockName, $numInt),
                     'block' => $blockName,
-                    'number' => (string) $numInt,
+                    'number' => sprintf('%02d', $numInt),
                     'household' => $hh,
                     'current_invoice_status' => $invStatus,
                     'status_color' => $statusColor,

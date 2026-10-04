@@ -128,7 +128,11 @@
                                 </div>
                             </a>
                         @else
-                            <a href="{{ \App\Filament\Resources\Households\HouseholdResource::getUrl('create') }}"
+                            <a href="{{ \App\Filament\Resources\Households\HouseholdResource::getUrl('create', [
+                                'house_code' => $lot['code'],
+                                'block' => $lot['block'],
+                                'house_number' => $lot['number'],
+                            ]) }}"
                                class="group block p-3.5 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-teal-500 dark:hover:border-teal-400 bg-gray-50/40 dark:bg-gray-800/20 hover:bg-teal-50/30 transition-all duration-200">
                                 <div class="flex items-center justify-between">
                                     <span class="font-mono font-semibold text-sm text-gray-400 dark:text-gray-500 group-hover:text-teal-700 dark:group-hover:text-teal-300">

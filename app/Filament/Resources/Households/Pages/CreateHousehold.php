@@ -19,6 +19,30 @@ final class CreateHousehold extends CreateRecord
 {
     protected static string $resource = HouseholdResource::class;
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        $houseCode = request()->query('house_code');
+        $block = request()->query('block');
+        $houseNumber = request()->query('house_number') ?? request()->query('number');
+
+        if ($houseCode && (! $block || ! $houseNumber) && preg_match('/^([A-Za-z]+)[-\s]?0*([0-9]+)$/', (string) $houseCode, $m)) {
+            $block = $block ?: mb_strtoupper($m[1]);
+            $houseNumber = $houseNumber ?: sprintf('%02d', (int) $m[2]);
+        }
+
+        $fills = array_filter([
+            'house_code' => $houseCode,
+            'block' => $block ? mb_strtoupper((string) $block) : null,
+            'house_number' => $houseNumber ? sprintf('%02d', (int) $houseNumber) : null,
+        ]);
+
+        if (! empty($fills)) {
+            $this->form->fill(array_merge($this->form->getState(), $fills));
+        }
+    }
+
     protected function afterCreate(): void
     {
         /** @var Household $household */

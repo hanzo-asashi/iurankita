@@ -45,3 +45,10 @@ it('can render the view household page with relation managers', function () {
     ])
         ->assertOk();
 });
+
+it('prefills house_code, block, and house_number on create household page from query parameters', function () {
+    $this->get('/admin/households/create?house_code=A-05&block=A&house_number=05')
+        ->assertOk()
+        ->assertSee('A-05')
+        ->assertSee('05');
+});

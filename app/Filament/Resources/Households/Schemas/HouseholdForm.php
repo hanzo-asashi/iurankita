@@ -39,17 +39,40 @@ final class HouseholdForm
                             TextInput::make('house_code')
                                 ->label('Kode Rumah')
                                 ->placeholder('Contoh: A-01')
+                                ->default(fn (): ?string => request()->query('house_code') ? (string) request()->query('house_code') : null)
                                 ->unique(ignoreRecord: true)
                                 ->required()
                                 ->maxLength(20),
                             TextInput::make('block')
                                 ->label('Blok')
                                 ->placeholder('Contoh: A')
+                                ->default(function (): ?string {
+                                    if ($block = request()->query('block')) {
+                                        return mb_strtoupper((string) $block);
+                                    }
+                                    $code = request()->query('house_code');
+                                    if ($code && preg_match('/^([A-Za-z]+)[-\s]?0*([0-9]+)$/', (string) $code, $m)) {
+                                        return mb_strtoupper($m[1]);
+                                    }
+
+                                    return null;
+                                })
                                 ->required()
                                 ->maxLength(10),
                             TextInput::make('house_number')
                                 ->label('Nomor Rumah')
                                 ->placeholder('Contoh: 01')
+                                ->default(function (): ?string {
+                                    if ($num = request()->query('house_number') ?? request()->query('number')) {
+                                        return sprintf('%02d', (int) $num);
+                                    }
+                                    $code = request()->query('house_code');
+                                    if ($code && preg_match('/^([A-Za-z]+)[-\s]?0*([0-9]+)$/', (string) $code, $m)) {
+                                        return sprintf('%02d', (int) $m[2]);
+                                    }
+
+                                    return null;
+                                })
                                 ->required()
                                 ->maxLength(10),
                         ]),
