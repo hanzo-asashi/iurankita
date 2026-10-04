@@ -210,6 +210,6 @@ vendor/bin/pint --format agent
 
 ## 👥 Pengembang & Hak Cipta
 
-* **Pengembang:** **Hanzo Asashi** ([Hansen Makangiras](https://github.com/hanzo-asashi) / Hanzo Asashi)
+* **Pengembang:** [Hanzo Asashi](https://github.com/hanzo-asashi)
 * **Kawasan Percontohan:** Paguyuban Warga **Del Mattappa Residence**, Kab. Soppeng
 * **Lisensi:** Open-source di bawah lisensi [MIT License](LICENSE).
