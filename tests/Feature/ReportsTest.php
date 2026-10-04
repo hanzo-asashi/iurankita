@@ -7,6 +7,7 @@ use App\Enums\ConstructionType;
 use App\Enums\InvoiceType;
 use App\Enums\UserRole;
 use App\Filament\Pages\GenerateMonthlyInvoices;
+use App\Filament\Pages\Reports\CashBookReport;
 use App\Filament\Pages\Reports\ConstructionBillingReport;
 use App\Filament\Pages\Reports\MonthlyBillingReport;
 use App\Filament\Pages\Reports\OutstandingReport;
@@ -78,6 +79,16 @@ it('can render generate monthly invoices page without errors and fill form', fun
         ->assertSee('Oktober 2026');
 });
 
+it('can render cash book report page without errors', function (): void {
+    $this->actingAs($this->admin)
+        ->get('/admin/cash-book-report')
+        ->assertOk();
+
+    livewire(CashBookReport::class)
+        ->assertSuccessful()
+        ->assertSee('Buku Kas Umum & Mutasi Keuangan RT');
+});
+
 it('can render physical print report pages for monthly, outstanding, payments, and construction', function (): void {
     $this->actingAs($this->admin)
         ->get(route('reports.print.monthly'))
@@ -98,4 +109,14 @@ it('can render physical print report pages for monthly, outstanding, payments, a
         ->get(route('reports.print.construction'))
         ->assertOk()
         ->assertSee('Laporan Rekapitulasi Iuran Pembangunan & Renovasi');
+
+    $this->actingAs($this->admin)
+        ->get(route('reports.print.expenses'))
+        ->assertOk()
+        ->assertSee('Laporan Buku Pengeluaran Kas RT');
+
+    $this->actingAs($this->admin)
+        ->get(route('reports.print.cash-book'))
+        ->assertOk()
+        ->assertSee('Buku Kas Umum');
 });

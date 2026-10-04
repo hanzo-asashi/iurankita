@@ -83,6 +83,13 @@ final class HouseholdForm
                                 ->default('owner')
                                 ->native(false)
                                 ->live(),
+                            TextInput::make('monthly_fee_override')
+                                ->label('Tarif Iuran Khusus (Override)')
+                                ->numeric()
+                                ->prefix('Rp')
+                                ->minValue(0)
+                                ->placeholder('Contoh: 100000')
+                                ->helperText('Kosongkan bila mengikuti tarif standar (Rp50.000 / Rp35.000). Diisi bila ada kesepakatan khusus (misal 2 kavling jadi 1).'),
                         ]),
                         Grid::make(2)
                             ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get): bool => $get('ownership_status') === 'rent')

@@ -39,7 +39,7 @@ final class PaymentReport extends Page implements HasTable
     protected string $view = 'filament.pages.reports.payment-report';
 
     /**
-     * @return array{monthly: int, construction: int, total: int}
+     * @return array{monthly: int, construction: int, total: int, cash: int, bank: int}
      */
     public function getSummaryProperty(): array
     {
@@ -51,10 +51,20 @@ final class PaymentReport extends Page implements HasTable
             ->whereHas('invoice', fn (Builder $q) => $q->where('invoice_type', InvoiceType::Construction))
             ->sum('amount');
 
+        $cash = Payment::query()
+            ->where('payment_method', PaymentMethod::Cash)
+            ->sum('amount');
+
+        $bank = Payment::query()
+            ->whereIn('payment_method', [PaymentMethod::Transfer, PaymentMethod::Qris])
+            ->sum('amount');
+
         return [
             'monthly' => (int) $monthly,
             'construction' => (int) $construction,
             'total' => (int) ($monthly + $construction),
+            'cash' => (int) $cash,
+            'bank' => (int) $bank,
         ];
     }
 

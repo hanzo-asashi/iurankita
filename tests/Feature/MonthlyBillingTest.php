@@ -53,6 +53,21 @@ it('calculates unoccupied household routine fee as Rp35.000', function (): void 
         ->and($result->feeCode)->toBe('monthly_unoccupied');
 });
 
+it('prioritizes monthly_fee_override over standard occupancy rates', function (): void {
+    $calculator = app(MonthlyBillingCalculatorService::class);
+    $household = Household::factory()->create([
+        'house_code' => 'C-10',
+        'occupancy_status' => OccupancyStatus::Occupied,
+        'monthly_fee_override' => 100000,
+    ]);
+
+    $result = $calculator->calculateMonthlyInvoice($household, Carbon::parse('2026-09-01'));
+
+    expect($result->amount)->toBe(100000)
+        ->and($result->feeCode)->toBe('monthly_custom')
+        ->and($result->feeName)->toBe('Iuran Khusus Unit');
+});
+
 it('generates exactly one monthly invoice per household per period and is idempotent', function (): void {
     $generator = app(MonthlyInvoiceGeneratorService::class);
 

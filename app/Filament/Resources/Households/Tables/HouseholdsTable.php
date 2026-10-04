@@ -52,6 +52,17 @@ final class HouseholdsTable
                     ->label('Status Hunian')
                     ->badge()
                     ->sortable(),
+                TextColumn::make('monthly_fee')
+                    ->label('Tarif Iuran')
+                    ->state(function (Household $record): string {
+                        if ($record->monthly_fee_override) {
+                            return 'Rp'.number_format($record->monthly_fee_override, 0, ',', '.').' (Khusus)';
+                        }
+
+                        return $record->occupancy_status === OccupancyStatus::Occupied ? 'Rp50.000' : 'Rp35.000';
+                    })
+                    ->badge()
+                    ->color(fn (Household $record): string => $record->monthly_fee_override ? 'warning' : 'info'),
                 TextColumn::make('construction_projects_count')
                     ->label('Total Proyek')
                     ->counts('constructionProjects')
@@ -122,9 +133,9 @@ final class HouseholdsTable
                             ->label('Perhitungan Estimasi')
                             ->content(function (\Filament\Forms\Get $get) use ($record): string {
                                 $months = (int) ($get('months') ?? 3);
-                                $rate = $record->occupancy_status === OccupancyStatus::Occupied ? 50000 : 35000;
+                                $rate = $record->monthly_fee_override ?? ($record->occupancy_status === OccupancyStatus::Occupied ? 50000 : 35000);
                                 $total = $rate * $months;
-                                $label = $record->occupancy_status->getLabel();
+                                $label = $record->monthly_fee_override ? 'Tarif Khusus' : $record->occupancy_status->getLabel();
 
                                 return 'Total: Rp'.number_format($total, 0, ',', '.')." ({$months} bulan x Rp".number_format($rate, 0, ',', '.')." [{$label}])";
                             }),

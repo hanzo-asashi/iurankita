@@ -45,6 +45,41 @@ final class OutstandingReport extends Page implements HasTable
 
     protected string $view = 'filament.pages.reports.outstanding-report';
 
+    public static function generateOutstandingBroadcastText(): string
+    {
+        $setting = AppSetting::current();
+        $complexName = $setting->complex_name ?? 'Del Mattappa Residence';
+        $todayStr = now()->translatedFormat('d F Y');
+
+        $invoices = Invoice::query()
+            ->whereIn('status', [InvoiceStatus::Unpaid, InvoiceStatus::Partial, InvoiceStatus::Overdue])
+            ->with(['household'])
+            ->orderBy('household_id')
+            ->get();
+
+        $totalOutstanding = (int) $invoices->sum('balance');
+        $unpaidCodes = $invoices->map(fn (Invoice $i): string => $i->household->house_code)->unique()->values()->implode(', ');
+
+        $text = "*PENGINGAT IURAN LINGKUNGAN {$complexName}*\n";
+        $text .= "Per Tanggal: {$todayStr}\n\n";
+        $text .= "Yth. Bapak/Ibu Warga {$complexName},\n";
+        $text .= "Mengingatkan kembali kepada warga yang masih memiliki kewajiban iuran bulanan/pembangunan terbuka, mohon kerja samanya untuk dapat menyelesaikan administrasi iuran demi kelancaran operasional (kebersihan sampah, keamanan, dan lampu jalan perumahan).\n\n";
+        $text .= "--------------------------------------\n";
+        $text .= "📊 *STATUS TUNGGAKAN SAAT INI:*\n";
+        $text .= "• Total Rumah Belum Lunas: {$invoices->unique('household_id')->count()} Unit\n";
+        $text .= '• Total Tunggakan Terbuka: Rp'.number_format($totalOutstanding, 0, ',', '.')."\n";
+        $text .= "• Unit yang belum lunas: {$unpaidCodes}\n";
+        $text .= "--------------------------------------\n\n";
+        $text .= "💳 *REKENING PEMBAYARAN KAS:*\n";
+        $text .= '• Bank: '.($setting->bank_name ?? 'Bank BRI')."\n";
+        $text .= '• No. Rekening: '.($setting->bank_account_number ?? '-')."\n";
+        $text .= '• Atas Nama: '.($setting->bank_account_holder ?? 'Kas '.$complexName)."\n\n";
+        $text .= "Warga juga dapat mengecek rincian tagihan secara mandiri melalui website portal perumahan.\n";
+        $text .= 'Setelah melakukan transfer, silakan konfirmasi bukti pembayaran ke Bendahara/Pengurus. Terima kasih banyak atas kerja sama seluruh warga.';
+
+        return $text;
+    }
+
     /**
      * @return array{
      *     monthly_total: int,
@@ -238,6 +273,22 @@ final class OutstandingReport extends Page implements HasTable
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('whatsapp_broadcast')
+                ->label('Siaran Pengingat WA Group')
+                ->icon(Heroicon::OutlinedChatBubbleLeftRight)
+                ->color('warning')
+                ->modalHeading('Format Pengumuman Pengingat Tunggakan Grup WhatsApp')
+                ->modalDescription('Salin teks pengingat sopan berikut untuk dibagikan ke WhatsApp Group warga Del Mattappa Residence.')
+                ->form([
+                    Textarea::make('broadcast_text')
+                        ->label('Teks Pengingat WhatsApp (Siap Salin)')
+                        ->rows(14)
+                        ->default(fn (): string => self::generateOutstandingBroadcastText())
+                        ->helperText('Klik di dalam kotak untuk menyalin atau mengedit teks sebelum dikirim ke grup warga.'),
+                ])
+                ->modalSubmitAction(false)
+                ->modalCancelActionLabel('Tutup'),
+
             Action::make('print')
                 ->label('Cetak Rekap Fisik (A4)')
                 ->icon(Heroicon::OutlinedPrinter)

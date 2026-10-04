@@ -27,6 +27,35 @@
             </div>
         </div>
 
+        {{-- Rekonsiliasi Kas Fisik vs Bank / QRIS --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-5 bg-amber-50/70 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-900/60 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider block">Kas Tunai Fisik (Di Tangan Bendahara)</span>
+                    <div class="text-xl font-black text-amber-900 dark:text-amber-200 mt-1">
+                        Rp{{ number_format($summary['cash'], 0, ',', '.') }}
+                    </div>
+                    <span class="text-xs text-amber-700 dark:text-amber-400">Total uang tunai fisik yang wajib ada di dompet kas RT</span>
+                </div>
+                <div class="p-3 bg-amber-200/60 dark:bg-amber-900/50 rounded-lg text-amber-800 dark:text-amber-200 font-extrabold text-xs">
+                    Kas Tunai
+                </div>
+            </div>
+
+            <div class="p-5 bg-sky-50/70 dark:bg-sky-950/30 rounded-xl border border-sky-200 dark:border-sky-900/60 flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-sky-800 dark:text-sky-300 uppercase tracking-wider block">Kas Non-Tunai (Rekening Bank & QRIS)</span>
+                    <div class="text-xl font-black text-sky-900 dark:text-sky-200 mt-1">
+                        Rp{{ number_format($summary['bank'], 0, ',', '.') }}
+                    </div>
+                    <span class="text-xs text-sky-700 dark:text-sky-400">Saldo mutasi transfer bank BRI & QRIS kas</span>
+                </div>
+                <div class="p-3 bg-sky-200/60 dark:bg-sky-900/50 rounded-lg text-sky-800 dark:text-sky-200 font-extrabold text-xs">
+                    Bank / QRIS
+                </div>
+            </div>
+        </div>
+
         <div class="space-y-4">
             {{ $this->table }}
         </div>

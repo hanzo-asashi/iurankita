@@ -109,7 +109,7 @@ final class DatabaseSeeder extends Seeder
             ['house_code' => 'C-04', 'block' => 'C', 'house_number' => '04', 'head_of_family' => 'Adil', 'occupancy_status' => OccupancyStatus::Occupied, 'phone' => '0812-4003-0004'],
             ['house_code' => 'C-06', 'block' => 'C', 'house_number' => '06', 'head_of_family' => 'Wahyu', 'occupancy_status' => OccupancyStatus::Occupied, 'phone' => '0812-4003-0006'],
             ['house_code' => 'C-09', 'block' => 'C', 'house_number' => '09', 'head_of_family' => 'Mirwang', 'occupancy_status' => OccupancyStatus::Occupied, 'phone' => '0812-4003-0009'],
-            ['house_code' => 'C-10', 'block' => 'C', 'house_number' => '10', 'head_of_family' => 'Irwan', 'occupancy_status' => OccupancyStatus::Occupied, 'phone' => '0812-4003-0010'],
+            ['house_code' => 'C-10', 'block' => 'C', 'house_number' => '10', 'head_of_family' => 'Irwan', 'occupancy_status' => OccupancyStatus::Occupied, 'phone' => '0812-4003-0010', 'monthly_fee_override' => 100000],
             ['house_code' => 'C-12', 'block' => 'C', 'house_number' => '12', 'head_of_family' => 'Abdul Kadir', 'occupancy_status' => OccupancyStatus::Unoccupied, 'phone' => '0812-4003-0012'],
             ['house_code' => 'C-14', 'block' => 'C', 'house_number' => '14', 'head_of_family' => 'Asniar', 'occupancy_status' => OccupancyStatus::Unoccupied, 'phone' => '0812-4003-0014'],
             ['house_code' => 'C-15', 'block' => 'C', 'house_number' => '15', 'head_of_family' => 'Irma Kismala Dewi', 'occupancy_status' => OccupancyStatus::Occupied, 'phone' => '0812-4003-0015'],

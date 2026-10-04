@@ -18,6 +18,22 @@ final class MonthlyBillingCalculatorService
      */
     public function calculateMonthlyInvoice(Household $household, CarbonInterface $period): BillingResult
     {
+        $periodFormatted = $period->translatedFormat('F Y');
+
+        if ($household->monthly_fee_override !== null && $household->monthly_fee_override > 0) {
+            $amount = (int) $household->monthly_fee_override;
+            $feeCode = 'monthly_custom';
+            $feeName = 'Iuran Khusus Unit';
+            $description = "{$feeName} - Periode {$periodFormatted}";
+
+            return new BillingResult(
+                amount: $amount,
+                feeCode: $feeCode,
+                feeName: $feeName,
+                description: $description,
+            );
+        }
+
         $isOccupied = $household->occupancy_status === OccupancyStatus::Occupied;
         $feeCode = $isOccupied ? 'monthly_occupied' : 'monthly_unoccupied';
         $defaultAmount = $isOccupied ? 50000 : 35000;

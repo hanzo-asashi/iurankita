@@ -26,6 +26,7 @@ final class Household extends Model
         'address',
         'occupancy_status',
         'ownership_status',
+        'monthly_fee_override',
         'owner_name',
         'owner_phone',
         'notes',
@@ -97,6 +98,7 @@ final class Household extends Model
     {
         return [
             'occupancy_status' => OccupancyStatus::class,
+            'monthly_fee_override' => 'integer',
             'is_active' => 'boolean',
         ];
     }

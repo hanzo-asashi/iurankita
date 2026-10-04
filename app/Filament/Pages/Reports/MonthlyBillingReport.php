@@ -6,9 +6,12 @@ namespace App\Filament\Pages\Reports;
 
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Models\AppSetting;
 use App\Models\Invoice;
 use BackedEnum;
 use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Textarea;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -34,6 +37,60 @@ final class MonthlyBillingReport extends Page implements HasTable
     protected static ?int $navigationSort = 1;
 
     protected string $view = 'filament.pages.reports.monthly-billing-report';
+
+    public static function generateBroadcastText(?string $period = null): string
+    {
+        $period = $period ?? now()->format('Y-m');
+        $setting = AppSetting::current();
+        $complexName = $setting->complex_name ?? 'Del Mattappa Residence';
+        $periodLabel = Carbon::createFromFormat('Y-m', $period)->translatedFormat('F Y');
+        $todayStr = now()->translatedFormat('d F Y');
+
+        $invoices = Invoice::query()
+            ->where('invoice_type', InvoiceType::Monthly)
+            ->where('billing_period', $period)
+            ->with('household')
+            ->orderBy('household_id')
+            ->get();
+
+        $totalHouseholds = $invoices->count();
+        $paidInvoices = $invoices->where('status', InvoiceStatus::Paid);
+        $unpaidInvoices = $invoices->whereIn('status', [InvoiceStatus::Unpaid, InvoiceStatus::Partial, InvoiceStatus::Overdue]);
+
+        $paidCodes = $paidInvoices->map(fn (Invoice $i): string => $i->household->house_code)->values()->implode(', ');
+        $unpaidCodes = $unpaidInvoices->map(fn (Invoice $i): string => $i->household->house_code)->values()->implode(', ');
+
+        $totalPaid = (int) $invoices->sum('amount_paid');
+        $totalBalance = (int) $invoices->sum('balance');
+
+        $text = "*PENGUMUMAN IURAN WARGA {$complexName}*\n";
+        $text .= "*Periode: {$periodLabel}*\n";
+        $text .= "Update data per: {$todayStr}\n\n";
+        $text .= "--------------------------------------\n";
+        $text .= "📊 *RINGKASAN OPERASIONAL:*\n";
+        $text .= "• Total Rumah: {$totalHouseholds} Unit\n";
+        $text .= "• ✅ Sudah Lunas: {$paidInvoices->count()} Rumah (Rp".number_format($totalPaid, 0, ',', '.').")\n";
+        $text .= "• ⏳ Belum Lunas: {$unpaidInvoices->count()} Rumah (Rp".number_format($totalBalance, 0, ',', '.').")\n";
+        $text .= "--------------------------------------\n\n";
+
+        if ($paidCodes !== '') {
+            $text .= "✅ *RUMAH YANG SUDAH LUNAS:*\n";
+            $text .= "{$paidCodes}\n\n";
+        }
+
+        if ($unpaidCodes !== '') {
+            $text .= "⏳ *RUMAH DALAM PROSES / BELUM LUNAS:*\n";
+            $text .= "{$unpaidCodes}\n\n";
+        }
+
+        $text .= "💳 *REKENING KAS RESMI PEMBAYARAN:*\n";
+        $text .= '• Bank: '.($setting->bank_name ?? 'Bank BRI')."\n";
+        $text .= '• No. Rekening: '.($setting->bank_account_number ?? '-')."\n";
+        $text .= '• Atas Nama: '.($setting->bank_account_holder ?? 'Kas '.$complexName)."\n\n";
+        $text .= 'Bagi warga yang telah melakukan pembayaran, mohon kirimkan konfirmasi bukti transfer ke Pengurus/Bendahara. Terima kasih atas kerja sama dan partisipasi aktif Bapak/Ibu sekalian demi kelancaran lingkungan perumahan kita bersama.';
+
+        return $text;
+    }
 
     public function table(Table $table): Table
     {
@@ -107,7 +164,23 @@ final class MonthlyBillingReport extends Page implements HasTable
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('print')
+            Action::make('whatsapp_broadcast')
+                ->label('Siaran WA Group')
+                ->icon(Heroicon::OutlinedChatBubbleLeftRight)
+                ->color('success')
+                ->modalHeading('Format Pengumuman Rekap Iuran untuk Grup WhatsApp')
+                ->modalDescription('Salin teks pengumuman siap kirim berikut untuk dibagikan ke WhatsApp Group warga Del Mattappa Residence.')
+                ->form([
+                    Textarea::make('broadcast_text')
+                        ->label('Teks Siaran WhatsApp (Siap Salin)')
+                        ->rows(14)
+                        ->default(fn (): string => self::generateBroadcastText())
+                        ->helperText('Klik di dalam kotak untuk menyalin atau mengedit teks sebelum dikirim ke grup warga.'),
+                ])
+                ->modalSubmitAction(false)
+                ->modalCancelActionLabel('Tutup'),
+
+            Action::make('print')
                 ->label('Cetak Rekap Fisik (A4)')
                 ->icon(Heroicon::OutlinedPrinter)
                 ->color('primary')

@@ -19,4 +19,6 @@ Route::middleware('auth')->prefix('admin/reports/print')->name('reports.print.')
     Route::get('/outstanding', [App\Http\Controllers\ReportPrintController::class, 'outstanding'])->name('outstanding');
     Route::get('/payments', [App\Http\Controllers\ReportPrintController::class, 'payments'])->name('payments');
     Route::get('/construction', [App\Http\Controllers\ReportPrintController::class, 'construction'])->name('construction');
+    Route::get('/expenses', [App\Http\Controllers\ReportPrintController::class, 'expenses'])->name('expenses');
+    Route::get('/cash-book', [App\Http\Controllers\ReportPrintController::class, 'cashBook'])->name('cash-book');
 });

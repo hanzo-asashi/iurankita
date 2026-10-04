@@ -103,9 +103,9 @@ final class ViewHousehold extends ViewRecord
                         ->label('Perhitungan Estimasi')
                         ->content(function (\Filament\Forms\Get $get) use ($record): string {
                             $months = (int) ($get('months') ?? 3);
-                            $rate = $record->occupancy_status === \App\Enums\OccupancyStatus::Occupied ? 50000 : 35000;
+                            $rate = $record->monthly_fee_override ?? ($record->occupancy_status === \App\Enums\OccupancyStatus::Occupied ? 50000 : 35000);
                             $total = $rate * $months;
-                            $label = $record->occupancy_status->getLabel();
+                            $label = $record->monthly_fee_override ? 'Tarif Khusus' : $record->occupancy_status->getLabel();
 
                             return 'Total: Rp'.number_format($total, 0, ',', '.')." ({$months} bulan x Rp".number_format($rate, 0, ',', '.')." [{$label}])";
                         }),
