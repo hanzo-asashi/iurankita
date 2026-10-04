@@ -11,7 +11,10 @@ test('an unauthenticated user can access the login page', function () {
     auth()->logout();
 
     $this->get(Filament::getLoginUrl())
-        ->assertOk();
+        ->assertOk()
+        ->assertSee('49-light.png')
+        ->assertSee('49-dark.png')
+        ->assertSee('49-favicon.png');
 });
 
 test('an unauthenticated user can not access the admin panel', function () {

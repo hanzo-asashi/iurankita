@@ -93,7 +93,7 @@
         ],
         "pest": "./vendor/bin/pest --parallel",
         "rector": "./vendor/bin/rector process --ansi",
-        "pint": "./vendor/bin/pint",
+        "pint": "./vendor/bin/pint --parallel",
         "phpstan": "./vendor/bin/phpstan analyse",
         "review": [
             "@pint",
